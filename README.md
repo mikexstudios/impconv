@@ -10,13 +10,17 @@ only converts impedance data from CH Instrument's .txt format to Gamry's
 ```
 go get github.com/mikexstudios/impconv
 go build impconv.go
-./impconv data.txt > data.dta
+./impconv data.txt
 ```
+`data.dta` will be created in the same directory. For convenience, you may
+also drag and drop `data.txt` on to the executable.
+
 Cross-compile with (see [syslist][1]):
 ```
 GOOS=windows GOARCH=386 go build impconv.go
-./impconv.exe data.txt > data.dta
+./impconv.exe data.txt
 ```
+(or drag and drop `data.txt`)
 
 [1]: https://github.com/golang/go/blob/master/src/go/build/syslist.go 
 
