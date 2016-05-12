@@ -26,23 +26,23 @@ func main() {
 	// fmt.Println(lines[len(lines)-2])
 
 	// We want to match the following parameters:
-	var InitE, HighFreq, LowFreq, Amplitude float64
-	re := make(map[string]*regexp.Regexp)
 	// Init E (V) = 0.2
-	re["InitE"], _ = regexp.Compile(`^Init E \(V\) =\s*(.+)\s*`)
 	// High Frequency (Hz) = 1e+5
-	re["HighFreq"], _ = regexp.Compile(`^High Frequency \(Hz\) =\s*(.+)\s*`)
 	// Low Frequency (Hz) = 1
-	re["LowFreq"], _ = regexp.Compile(`^Low Frequency \(Hz\) =\s*(.+)\s*`)
 	// Imp SF -> ignore
 	// Amplitude (V) = 0.005
-	re["Amplitude"], _ = regexp.Compile(`^Amplitude \(V\) =\s*(.+)\s*`)
 	// Quiet Time (sec) = 0 -> ignore
 	// Freq/Hz, Z'/ohm, Z"/ohm, Z/ohm, Phase/deg
+	var InitE, HighFreq, LowFreq, Amplitude float64
+	re := make(map[string]*regexp.Regexp)
+	re["InitE"], _ = regexp.Compile(`^Init E \(V\) =\s*(.+)\s*`)
+	re["HighFreq"], _ = regexp.Compile(`^High Frequency \(Hz\) =\s*(.+)\s*`)
+	re["LowFreq"], _ = regexp.Compile(`^Low Frequency \(Hz\) =\s*(.+)\s*`)
+	re["Amplitude"], _ = regexp.Compile(`^Amplitude \(V\) =\s*(.+)\s*`)
 	re["Header"], _ = regexp.Compile(`^Freq/Hz,.+`)
 
 	// We store the data as a slice of maps (with keys as columns):
-	// data := make([]map[string]float64, 0)
+	data := make([]map[string]float64, 0)
 
 	var inData bool = false
 	for _, line := range lines {
@@ -53,6 +53,7 @@ func main() {
 
 		if re["Header"].MatchString(line) {
 			inData = true
+			continue
 		}
 
 		if !inData {
@@ -84,9 +85,40 @@ func main() {
 		d["Zpp"], _ = strconv.ParseFloat(strings.TrimSpace(s[2]), 64)
 		d["Z"], _ = strconv.ParseFloat(strings.TrimSpace(s[3]), 64)
 		d["Phase"], _ = strconv.ParseFloat(strings.TrimSpace(s[4]), 64)
-		fmt.Println(d)
-
+		//fmt.Println(d)
+		data = append(data, d)
 	}
 
-	fmt.Println(InitE, HighFreq, LowFreq, Amplitude)
+	// fmt.Println(InitE, HighFreq, LowFreq, Amplitude)
+	// fmt.Println(data)
+
+	// Now output Gamry's DTA format
+	fmt.Printf("EXPLAIN\r\n")
+	fmt.Printf("TAG	EISPOT\r\n")
+	fmt.Printf("TITLE	LABEL	Potentiostatic EIS	Test &Identifier\r\n")
+	fmt.Printf("\r\n")
+
+	// We can't get exactly three digit precision exponent unless:
+	// http://stackoverflow.com/questions/8773133/c-how-to-get-one-digit-exponent-with-printf
+	fmt.Printf("VDC	POTEN	%11.5E	F	DC &Voltage (V)\r\n", InitE)
+	fmt.Printf("FREQINIT	QUANT	%11.5E	Initial Fre&q. (Hz)\r\n", HighFreq)
+	fmt.Printf("FREQFINAL	QUANT	%11.5E	Final Fre&q. (Hz)\r\n", LowFreq)
+	// PTSPERDEC	QUANT	1.00000E+001	Points/&decade
+	fmt.Printf("VAC	QUANT	%11.5E	AC &Voltage (mV rms)\r\n", Amplitude)
+	// AREA	QUANT	1.00000E+000	&Area (cm^2)
+	// CONDIT	TWOPARAM	F	1.50000E+001	0.00000E+000	Conditionin&g	Time(s)	E(V)
+	// DELAY	TWOPARAM	F	1.00000E+002	0.00000E+000	Init. De&lay	Time(s)	Stab.(mV/s)
+	// SPEED	SELECTOR	1	&Optimize for:
+	// ZGUESS	QUANT	2.00000E+002	E&stimated Z (ohms)
+	// EOC	QUANT	0.1358522	Open Circuit (V)
+
+	fmt.Printf("ZCURVE	TABLE\r\n")
+	fmt.Printf("	Pt	Time	Freq	Zreal	Zimag	Zsig	Zmod	Zphz	Idc	Vdc	IERange\r\n")
+	fmt.Printf("	#	s	Hz	ohm	ohm	V	ohm	°	A	V	#\r\n")
+	for i, d := range data {
+		fmt.Printf("\t%d\t%d\t%f\t%f\t%f\t1\t%f\t%f\t0.000000E-000\t0.000000\t10\r\n",
+			i, i, //we don't have time information, so just use #
+			d["Freq"], d["Zp"], d["Zpp"], d["Z"], d["Phase"])
+	}
+
 }
