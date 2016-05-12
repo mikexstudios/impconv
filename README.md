@@ -5,6 +5,21 @@ impconv is an electrochemical impedance file format converter. Currently, it
 only converts impedance data from CH Instrument's .txt format to Gamry's
 .dta format.
 
+## Usage
+
+```
+go get github.com/mikexstudios/impconv
+go build impconv.go
+./impconv data.txt > data.dta
+```
+Cross-compile with (see [syslist][1]):
+```
+GOOS=windows GOARCH=386 go build impconv.go
+./impconv.exe data.txt > data.dta
+```
+
+[1]: https://github.com/golang/go/blob/master/src/go/build/syslist.go 
+
 ## Sample formats
 
 ### CH Instrument
