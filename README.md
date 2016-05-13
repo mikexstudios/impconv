@@ -2,23 +2,27 @@ impconv
 =======
 
 impconv is an electrochemical impedance file format converter. Currently, it
-only converts impedance data from CH Instrument's .txt format to Gamry's
-.dta format.
+converts impedance data from CH Instrument's .txt format to Gamry's
+.dta format or Zview's .z format.
 
 ## Usage
 
 ```
 go get github.com/mikexstudios/impconv
-go build impconv.go
-./impconv data.txt
+go build chi2gamry.go
+go build chi2zview.go
+./chi2gamry data.txt
+./chi2zview data.txt
 ```
-`data.dta` will be created in the same directory. For convenience, you may
-also drag and drop `data.txt` on to the executable.
+`data.dta` and `data.z` will be created in the same directory. For convenience,
+you may also drag and drop `data.txt` on to the executable.
 
 Cross-compile with (see [syslist][1]):
 ```
-GOOS=windows GOARCH=386 go build impconv.go
-./impconv.exe data.txt
+GOOS=windows GOARCH=386 go build chi2gamry.go
+GOOS=windows GOARCH=386 go build chi2zview.go
+./chi2gamry.exe data.txt
+./chi2zview.exe data.txt
 ```
 (or drag and drop `data.txt`)
 
@@ -85,3 +89,17 @@ ZCURVE	TABLE
 This is already simplified and many lines (from `PSTAT` to `EOC`) can be omitted
 and Echem Analyst software will still display the Bode and Nyquit plots.
 
+
+### Zview
+
+The older Zview data format is very simple:
+
+```
+"ZView Calculated Data File: Version 1.1"
+"  Freq (Hz)    Ampl     Bias   Time(Sec)   Z'(a)    Z''(b)    GD   Err   Range"
+ 6.500000E+0004,  0.000000E+0000,  0.000000E+0000,  1.000000E+0000,  1.773600E+0003, -6.670100E+0000,  0.000000E+0000, 0, 0
+ 5.793100E+0004,  0.000000E+0000,  0.000000E+0000,  2.000000E+0000,  1.893600E+0003, -1.203200E+0001,  0.000000E+0000, 0, 0
+ 5.163100E+0004,  0.000000E+0000,  0.000000E+0000,  3.000000E+0000,  1.807600E+0003, -3.376700E+0001,  0.000000E+0000, 0, 0
+ 4.601600E+0004,  0.000000E+0000,  0.000000E+0000,  4.000000E+0000,  1.806000E+0003, -3.669100E+0001,  0.000000E+0000, 0, 0
+...
+```
