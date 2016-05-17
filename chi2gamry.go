@@ -5,10 +5,6 @@ import "os"
 import "path/filepath"
 import "strings"
 
-// import "io/ioutil"
-// import "regexp"
-// import "strconv"
-
 func main() {
 	args := os.Args[1:]
 	if len(args) <= 0 {
@@ -24,11 +20,15 @@ func main() {
 	// fmt.Println(data)
 
 	// Now output Gamry's DTA format
-	f, err := os.Create(outFilename)
+	writeGamryFile(outFilename, params, data)
+}
+
+func writeGamryFile(filename string, params map[string]float64, data []map[string]float64) {
+	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close() //at end of main()
+	defer f.Close()
 
 	fmt.Fprintf(f, "EXPLAIN\r\n")
 	fmt.Fprintf(f, "TAG	EISPOT\r\n")
@@ -57,5 +57,4 @@ func main() {
 			i, i, //we don't have time information, so just use #
 			d["Freq"], d["Zp"], d["Zpp"], d["Z"], d["Phase"])
 	}
-
 }
