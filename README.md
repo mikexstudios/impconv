@@ -7,6 +7,8 @@ converts impedance data from CH Instrument's .txt format to Gamry's
 
 ## Usage
 
+**[Download binaries on the releases page!][1]**
+
 ```
 go get github.com/mikexstudios/impconv
 go build chi2gamry.go chi.go
@@ -17,7 +19,7 @@ go build chi2zview.go chi.go
 `data.dta` and `data.z` will be created in the same directory. For convenience,
 you may also drag and drop `data.txt` (or more files) on to the executable.
 
-Cross-compile with (see [syslist][1]):
+Cross-compile with (see [syslist][2]):
 ```
 GOOS=windows GOARCH=386 go build chi2gamry.go chi.go
 GOOS=windows GOARCH=386 go build chi2zview.go chi.go
@@ -26,7 +28,8 @@ GOOS=windows GOARCH=386 go build chi2zview.go chi.go
 ```
 (or drag and drop `data.txt` or more files)
 
-[1]: https://github.com/golang/go/blob/master/src/go/build/syslist.go 
+[1]: https://github.com/mikexstudios/impconv/releases
+[2]: https://github.com/golang/go/blob/master/src/go/build/syslist.go 
 
 ## Sample formats
 
