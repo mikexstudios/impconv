@@ -8,19 +8,19 @@ import "strings"
 func main() {
 	args := os.Args[1:]
 	if len(args) <= 0 {
-		fmt.Println("Usage:", filepath.Base(os.Args[0]), "[data.txt]")
-		fmt.Println("Output: data.dta file in the same directory.")
+		fmt.Println("Usage:", filepath.Base(os.Args[0]), "[data.txt] [data2.txt] ...")
+		fmt.Println("Output: .dta file(s) in the same directory.")
 		os.Exit(1)
 	}
-	inFilename := os.Args[1]
-	inFilenameNoExt := strings.TrimSuffix(inFilename, filepath.Ext(inFilename))
-	outFilename := inFilenameNoExt + ".dta"
+	inFilenames := os.Args[1:]
 
-	params, data := parseCHIFile(inFilename)
-	// fmt.Println(data)
+	for _, inFilename := range inFilenames {
+		inFilenameNoExt := strings.TrimSuffix(inFilename, filepath.Ext(inFilename))
+		outFilename := inFilenameNoExt + ".dta"
 
-	// Now output Gamry's DTA format
-	writeGamryFile(outFilename, params, data)
+		params, data := parseCHIFile(inFilename)
+		writeGamryFile(outFilename, params, data)
+	}
 }
 
 func writeGamryFile(filename string, params map[string]float64, data []map[string]float64) {

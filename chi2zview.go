@@ -8,22 +8,19 @@ import "strings"
 func main() {
 	args := os.Args[1:]
 	if len(args) <= 0 {
-		fmt.Println("Usage:", filepath.Base(os.Args[0]), "[data.txt]")
-		fmt.Println("Output: data.z file in the same directory.")
+		fmt.Println("Usage:", filepath.Base(os.Args[0]), "[data.txt] [data2.txt] ...")
+		fmt.Println("Output: .z file(s) in the same directory.")
 		os.Exit(1)
 	}
-	inFilename := os.Args[1]
-	inFilenameNoExt := strings.TrimSuffix(inFilename, filepath.Ext(inFilename))
-	outFilename := inFilenameNoExt + ".z"
+	inFilenames := os.Args[1:]
 
-	params, data := parseCHIFile(inFilename)
-	// fmt.Println(data)
+	for _, inFilename := range inFilenames {
+		inFilenameNoExt := strings.TrimSuffix(inFilename, filepath.Ext(inFilename))
+		outFilename := inFilenameNoExt + ".z"
 
-	// Now output Zview's older format
-	writeZviewFile(outFilename, params, data)
-
-	// Need to use these vars
-	//fmt.Println(params)
+		params, data := parseCHIFile(inFilename)
+		writeZviewFile(outFilename, params, data)
+	}
 }
 
 func writeZviewFile(filename string, params map[string]float64, data []map[string]float64) {
